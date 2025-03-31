@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - Scolarité</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-graduation-cap fa-3x text-light"></i>
+                        <h5 class="text-light mt-2">Scolarité</h5>
+                        <p class="text-light opacity-75">{{ session.get('user_type', '').capitalize() }}</p>
+                    </div>
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light active" href="/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        
+                        {% if session.get('user_type') == 'admin' or session.get('user_type') == 'staff' %}
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/students">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                Étudiants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/teachers">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                                Enseignants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/rooms">
+                                <i class="fas fa-door-open me-2"></i>
+                                Salles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/documents">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Demandes de documents
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/payments">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Paiements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/calendar">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Calendrier
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/announcements">
+                                <i class="fas fa-bullhorn me-2"></i>
+                                Annonces
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/reports">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Rapports
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if session.get('user_type') == 'student' %}
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/student/profile">
+                                <i class="fas fa-user me-2"></i>
+                                Mon profil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/student/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Mes cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/student/grades">
+                                <i class="fas fa-star me-2"></i>
+                                Mes notes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/student/absences">
+                                <i class="fas fa-calendar-times me-2"></i>
+                                Mes absences
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/student/documents">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Demande de documents
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/student/payments">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Paiements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/student/library">
+                                <i class="fas fa-book-reader me-2"></i>
+                                Bibliothèque
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if session.get('user_type') == 'teacher' %}
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/profile">
+                                <i class="fas fa-user me-2"></i>
+                                Mon profil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Mes cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/students">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                Mes étudiants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/grades">
+                                <i class="fas fa-star me-2"></i>
+                                Gestion des notes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/absences">
+                                <i class="fas fa-calendar-times me-2"></i>
+                                Gestion des absences
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/resources">
+                                <i class="fas fa-file-upload me-2"></i>
+                                Ressources pédagogiques
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/messages">
+                                <i class="fas fa-envelope me-2"></i>
+                                Messagerie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/forums">
+                                <i class="fas fa-comments me-2"></i>
+                                Forums
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/calendar">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Calendrier
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <button class="btn btn-sm btn-dark d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        Tableau de bord
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell me-1"></i> 
+                                <span class="badge bg-danger">3</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="width: 300px;">
+                                <li><h6 class="dropdown-header">Notifications</h6></li>
+                                <li><a class="dropdown-item" href="#">Nouvelle annonce : "Suspension des cours"</a></li>
+                                <li><a class="dropdown-item" href="#">Votre demande de document est prête</a></li>
+                                <li><a class="dropdown-item" href="#">Rappel: Paiement des frais de scolarité</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center" href="/notifications">Voir toutes les notifications</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group ms-2">
+                            <button type="button" class="btn btn-outline-secondary">
+                                <i class="fas fa-user-circle me-1"></i> {{ session.get('username', 'Utilisateur') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-4">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Cours</h6>
+                                        <h2 class="display-4">10</h2>
+                                    </div>
+                                    <i class="fas fa-book fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a href="#" class="text-white text-decoration-none">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Moyenne générale</h6>
+                                        <h2 class="display-4">14.5</h2>
+                                    </div>
+                                    <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a href="#" class="text-white text-decoration-none">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="card bg-warning text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Absences</h6>
+                                        <h2 class="display-4">3</h2>
+                                    </div>
+                                    <i class="fas fa-calendar-times fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a href="#" class="text-white text-decoration-none">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-bullhorn me-1"></i>
+                                Annonces récentes
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group">
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">Suspension des cours</h5>
+                                            <small class="text-muted">il y a 3 jours</small>
+                                        </div>
+                                        <p class="mb-1">Les cours seront suspendus le 29 mars pour maintenance des locaux.</p>
+                                        <small class="text-muted">Administration</small>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">Conférence sur l'intelligence artificielle</h5>
+                                            <small class="text-muted">il y a 5 jours</small>
+                                        </div>
+                                        <p class="mb-1">Une conférence sur l'IA sera organisée le 2 avril à l'amphithéâtre principal.</p>
+                                        <small class="text-muted">Département Informatique</small>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">Rappel: Échéance des frais de scolarité</h5>
+                                            <small class="text-muted">il y a 1 semaine</small>
+                                        </div>
+                                        <p class="mb-1">Nous vous rappelons que la deuxième tranche des frais de scolarité doit être réglée avant le 15 avril.</p>
+                                        <small class="text-muted">Service Financier</small>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Événements à venir
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group">
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">Examen de Mathématiques</h6>
+                                            <small>25 mars</small>
+                                        </div>
+                                        <small class="text-muted">10:00 - 12:00, Salle A102</small>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">Conférence IA</h6>
+                                            <small>2 avril</small>
+                                        </div>
+                                        <small class="text-muted">14:00 - 16:00, Amphithéâtre</small>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">Remise des projets</h6>
+                                            <small>10 avril</small>
+                                        </div>
+                                        <small class="text-muted">Date limite pour tous les cours</small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/admin/calendar" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-calendar me-1"></i> Voir le calendrier complet
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-book me-1"></i>
+                                Cours récents
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Cours</th>
+                                            <th>Enseignant</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>INFO301</td>
+                                            <td>Programmation avancée</td>
+                                            <td>Dr. Martin</td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>MATH202</td>
+                                            <td>Algèbre linéaire</td>
+                                            <td>Dr. Dubois</td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>PHYS101</td>
+                                            <td>Physique générale</td>
+                                            <td>Dr. Leroux</td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-tasks me-1"></i>
+                                Tâches à faire
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-danger me-2">Urgent</span>
+                                            Rendre le projet de programmation
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">23 mars</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-warning me-2">Important</span>
+                                            Réviser pour l'examen de mathématiques
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">25 mars</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-info me-2">Normal</span>
+                                            Préparer la présentation de groupe
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">30 mars</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-plus me-1"></i> Ajouter une tâche
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

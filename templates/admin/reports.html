@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapports - Scolarité</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-graduation-cap fa-3x text-light"></i>
+                        <h5 class="text-light mt-2">Scolarité</h5>
+                        <p class="text-light opacity-75">{{ user.user_type.capitalize() }}</p>
+                    </div>
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/students">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                Étudiants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/teachers">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                                Enseignants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/rooms">
+                                <i class="fas fa-door-open me-2"></i>
+                                Salles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/documents">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Demandes de documents
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/payments">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Paiements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/calendar">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Calendrier
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/announcements">
+                                <i class="fas fa-bullhorn me-2"></i>
+                                Annonces
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light active" href="/admin/reports">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Rapports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/messages">
+                                <i class="fas fa-envelope me-2"></i>
+                                Messagerie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/forums">
+                                <i class="fas fa-comments me-2"></i>
+                                Forums
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <button class="btn btn-sm btn-dark d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        Rapports et Statistiques
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-download me-1"></i> Exporter
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#"><i class="far fa-file-pdf me-2"></i> PDF</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="far fa-file-excel me-2"></i> Excel</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="far fa-file-csv me-2"></i> CSV</a></li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-share-alt me-1"></i> Partager
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary ms-2">
+                            <i class="fas fa-plus me-1"></i> Nouveau rapport
+                        </button>
+                    </div>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Date Range Filter -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form class="row g-3">
+                            <div class="col-md-3">
+                                <label for="reportType" class="form-label">Type de rapport</label>
+                                <select class="form-select" id="reportType">
+                                    <option value="all" selected>Tous les rapports</option>
+                                    <option value="academic">Académique</option>
+                                    <option value="financial">Financier</option>
+                                    <option value="attendance">Assiduité</option>
+                                    <option value="performance">Performance</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="dateRangePreset" class="form-label">Période</label>
+                                <select class="form-select" id="dateRangePreset">
+                                    <option value="today">Aujourd'hui</option>
+                                    <option value="week">Cette semaine</option>
+                                    <option value="month" selected>Ce mois</option>
+                                    <option value="quarter">Ce trimestre</option>
+                                    <option value="year">Cette année</option>
+                                    <option value="custom">Personnalisée</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="startDate" class="form-label">Date de début</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="endDate" class="form-label">Date de fin</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-1"></i> Appliquer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Summary -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-primary text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Étudiants actifs</h6>
+                                        <h3 class="card-text mt-2">754</h3>
+                                    </div>
+                                    <i class="fas fa-user-graduate fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-success text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Taux de réussite</h6>
+                                        <h3 class="card-text mt-2">87%</h3>
+                                    </div>
+                                    <i class="fas fa-graduation-cap fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-info text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Taux de présence</h6>
+                                        <h3 class="card-text mt-2">92%</h3>
+                                    </div>
+                                    <i class="fas fa-clipboard-check fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-warning text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Taux de recouvrement</h6>
+                                        <h3 class="card-text mt-2">76%</h3>
+                                    </div>
+                                    <i class="fas fa-money-bill-wave fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reports Navigation -->
+                <ul class="nav nav-tabs mb-4" id="reportsTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Vue d'ensemble</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="academic-tab" data-bs-toggle="tab" data-bs-target="#academic" type="button" role="tab" aria-controls="academic" aria-selected="false">Académique</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab" aria-controls="attendance" aria-selected="false">Assiduité</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="financial-tab" data-bs-toggle="tab" data-bs-target="#financial" type="button" role="tab" aria-controls="financial" aria-selected="false">Financier</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button" role="tab" aria-controls="saved" aria-selected="false">Rapports sauvegardés</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="reportsTabContent">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                        <!-- Student Distribution Chart -->
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-chart-pie me-1"></i>
+                                            Répartition des étudiants par niveau
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Exporter</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i> Imprimer</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-expand me-2"></i> Agrandir</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-chart-pie fa-5x text-muted mb-3"></i>
+                                        <p class="text-muted">Graphique de répartition des étudiants par niveau</p>
+                                        <div class="mt-4">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>L1</span>
+                                                <span>32%</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: 32%" aria-valuenow="32" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>L2</span>
+                                                <span>28%</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 28%" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>L3</span>
+                                                <span>25%</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>M1</span>
+                                                <span>10%</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>M2</span>
+                                                <span>5%</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-chart-bar me-1"></i>
+                                            Performance académique par département
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Exporter</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i> Imprimer</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-expand me-2"></i> Agrandir</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-chart-bar fa-5x text-muted mb-3"></i>
+                                        <p class="text-muted">Graphique de performance académique par département</p>
+                                        <div class="mt-4">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Informatique</span>
+                                                <span>14.5/20</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: 72.5%" aria-valuenow="14.5" aria-valuemin="0" aria-valuemax="20"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Gestion</span>
+                                                <span>13.8/20</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 69%" aria-valuenow="13.8" aria-valuemin="0" aria-valuemax="20"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Droit</span>
+                                                <span>12.6/20</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: 63%" aria-valuenow="12.6" aria-valuemin="0" aria-valuemax="20"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Médecine</span>
+                                                <span>15.2/20</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 76%" aria-valuenow="15.2" aria-valuemin="0" aria-valuemax="20"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Lettres</span>
+                                                <span>13.1/20</span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: 65.5%" aria-valuenow="13.1" aria-valuemin="0" aria-valuemax="20"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enrollment Trends & Financials -->
+                        <div class="row">
+                            <div class="col-xl-8">
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-chart-line me-1"></i>
+                                            Tendance des inscriptions (5 dernières années)
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Exporter</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i> Imprimer</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-expand me-2"></i> Agrandir</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-chart-line fa-5x text-muted mb-3"></i>
+                                        <p class="text-muted">Graphique de tendance des inscriptions</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-4">
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-money-bill-wave me-1"></i>
+                                            Recettes par type
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton4" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Exporter</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i> Imprimer</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-expand me-2"></i> Agrandir</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-4">
+                                            <i class="fas fa-chart-pie fa-5x text-muted mb-3"></i>
+                                            <p class="text-muted">Graphique des recettes par type</p>
+                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Frais de scolarité</span>
+                                                <span class="fw-bold">85%</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Inscription</span>
+                                                <span class="fw-bold">10%</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Livres et fournitures</span>
+                                                <span class="fw-bold">3%</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Activités</span>
+                                                <span class="fw-bold">2%</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Reports -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-file-alt me-1"></i>
+                                Rapports récents
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Rapport</th>
+                                            <th>Type</th>
+                                            <th>Généré par</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Rapport mensuel des résultats</td>
+                                            <td><span class="badge bg-primary">Académique</span></td>
+                                            <td>Admin</td>
+                                            <td>20/03/2025</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-info" title="Télécharger">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger" title="Supprimer">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Rapport d'assiduité du premier trimestre</td>
+                                            <td><span class="badge bg-info">Assiduité</span></td>
+                                            <td>Admin</td>
+                                            <td>15/03/2025</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-info" title="Télécharger">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger" title="Supprimer">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Rapport financier - Février 2025</td>
+                                            <td><span class="badge bg-warning">Financier</span></td>
+                                            <td>Admin</td>
+                                            <td>10/03/2025</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-info" title="Télécharger">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger" title="Supprimer">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Academic Tab -->
+                    <div class="tab-pane fade" id="academic" role="tabpanel" aria-labelledby="academic-tab">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-graduation-cap me-1"></i>
+                                Rapports académiques
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="p-3 bg-primary text-white rounded me-3">
+                                                        <i class="fas fa-chart-line"></i>
+                                                    </div>
+                                                    <h5 class="card-title mb-0">Performance par niveau</h5>
+                                                </div>
+                                                <p class="card-text">Analyse détaillée des performances académiques par niveau (L1, L2, L3, M1, M2).</p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <a href="#" class="btn btn-primary w-100">Générer</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="p-3 bg-success text-white rounded me-3">
+                                                        <i class="fas fa-star"></i>
+                                                    </div>
+                                                    <h5 class="card-title mb-0">Analyse des résultats</h5>
+                                                </div>
+                                                <p class="card-text">Statistiques des résultats d'examens et évaluation du taux de réussite par matière.</p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <a href="#" class="btn btn-success w-100">Générer</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="p-3 bg-info text-white rounded me-3">
+                                                        <i class="fas fa-user-graduate"></i>
+                                                    </div>
+                                                    <h5 class="card-title mb-0">Rapport de diplômés</h5>
+                                                </div>
+                                                <p class="card-text">Suivi des étudiants diplômés, statistiques d'insertion professionnelle et poursuite d'études.</p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <a href="#" class="btn btn-info w-100">Générer</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Attendance Tab -->
+                    <div class="tab-pane fade" id="attendance" role="tabpanel" aria-labelledby="attendance-tab">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-check me-1"></i>
+                                Rapports d'assiduité
+                            </div>
+                            <div class="card-body">
+                                <p>Vue d'ensemble de l'assiduité des étudiants</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Financial Tab -->
+                    <div class="tab-pane fade" id="financial" role="tabpanel" aria-labelledby="financial-tab">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-money-bill-wave me-1"></i>
+                                Rapports financiers
+                            </div>
+                            <div class="card-body">
+                                <p>Analyse financière et de paiements</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Saved Reports Tab -->
+                    <div class="tab-pane fade" id="saved" role="tabpanel" aria-labelledby="saved-tab">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-save me-1"></i>
+                                Rapports sauvegardés
+                            </div>
+                            <div class="card-body">
+                                <p>Vos rapports sauvegardés et planifiés</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Scheduled Reports -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-clock me-1"></i>
+                            Rapports programmés
+                        </div>
+                        <button class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i> Programmer un rapport
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Rapport</th>
+                                    <th>Type</th>
+                                    <th>Fréquence</th>
+                                    <th>Prochaine exécution</th>
+                                    <th>Destinataires</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Rapport mensuel des résultats</td>
+                                    <td><span class="badge bg-primary">Académique</span></td>
+                                    <td>Mensuelle</td>
+                                    <td>01/04/2025</td>
+                                    <td>3 destinataires</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="#" class="btn btn-primary" title="Voir">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-info" title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-danger" title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Rapport de paiements</td>
+                                    <td><span class="badge bg-warning">Financier</span></td>
+                                    <td>Hebdomadaire</td>
+                                    <td>25/03/2025</td>
+                                    <td>2 destinataires</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="#" class="btn btn-primary" title="Voir">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-info" title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-danger" title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

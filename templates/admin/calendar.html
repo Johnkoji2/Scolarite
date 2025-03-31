@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier académique - Scolarité</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .calendar-day {
+            min-height: 120px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .calendar-day:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        .calendar-day-header {
+            font-weight: bold;
+            padding: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .calendar-day-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .calendar-event {
+            margin: 2px 0;
+            padding: 3px 5px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .other-month {
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-graduation-cap fa-3x text-light"></i>
+                        <h5 class="text-light mt-2">Scolarité</h5>
+                        <p class="text-light opacity-75">{{ user.user_type.capitalize() }}</p>
+                    </div>
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/students">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                Étudiants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/teachers">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                                Enseignants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/rooms">
+                                <i class="fas fa-door-open me-2"></i>
+                                Salles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/documents">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Demandes de documents
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/payments">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Paiements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light active" href="/admin/calendar">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Calendrier
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/announcements">
+                                <i class="fas fa-bullhorn me-2"></i>
+                                Annonces
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/reports">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Rapports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/messages">
+                                <i class="fas fa-envelope me-2"></i>
+                                Messagerie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/forums">
+                                <i class="fas fa-comments me-2"></i>
+                                Forums
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <button class="btn btn-sm btn-dark d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        Calendrier académique
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Jour</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Semaine</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary active">Mois</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Année</button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addEventModal">
+                            <i class="fas fa-plus me-1"></i> Nouvel événement
+                        </button>
+                    </div>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Calendar Navigation -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary ms-2">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary ms-3">Aujourd'hui</button>
+                            </div>
+                            <h3 class="mb-0">Mars 2025</h3>
+                            <div class="d-flex">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="showAcademic" checked>
+                                    <label class="form-check-label" for="showAcademic">
+                                        <span class="badge bg-primary me-1"></span> Académique
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="showExams" checked>
+                                    <label class="form-check-label" for="showExams">
+                                        <span class="badge bg-danger me-1"></span> Examens
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="showHolidays" checked>
+                                    <label class="form-check-label" for="showHolidays">
+                                        <span class="badge bg-success me-1"></span> Vacances
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="showEvents" checked>
+                                    <label class="form-check-label" for="showEvents">
+                                        <span class="badge bg-warning me-1"></span> Événements
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Monthly Calendar -->
+                <div class="card mb-4">
+                    <div class="card-body p-2">
+                        <div class="row text-center p-2">
+                            <div class="col">Lun</div>
+                            <div class="col">Mar</div>
+                            <div class="col">Mer</div>
+                            <div class="col">Jeu</div>
+                            <div class="col">Ven</div>
+                            <div class="col">Sam</div>
+                            <div class="col">Dim</div>
+                        </div>
+                        
+                        <!-- Week 1 -->
+                        <div class="row">
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">24</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">25</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">26</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">27</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">28</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">1</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-event bg-primary text-white">
+                                        Début du semestre
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">2</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Week 2 -->
+                        <div class="row">
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">3</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">4</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">5</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">6</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">7</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">8</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">9</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Week 3 -->
+                        <div class="row">
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">10</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-event bg-warning text-dark">
+                                        Réunion Pédagogique
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">11</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">12</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">13</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">14</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">15</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-event bg-danger text-white">
+                                        Échéance Paiements
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">16</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Week 4 -->
+                        <div class="row">
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">17</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">18</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">19</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">20</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">21</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">22</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-event bg-primary text-white">
+                                        Journée portes ouvertes
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day bg-light bg-opacity-10">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">23</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Week 5 -->
+                        <div class="row">
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">24</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">25</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-event bg-danger text-white">
+                                        Examens Mathématiques
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">26</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">27</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">28</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">29</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-event bg-success text-white">
+                                        Fermeture Maintenance
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">30</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Week 6 -->
+                        <div class="row">
+                            <div class="col p-0">
+                                <div class="calendar-day">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">31</span>
+                                        <button class="btn btn-sm btn-link p-0 text-light">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">1</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">2</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="calendar-event bg-warning text-dark">
+                                        Conférence IA
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">3</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">4</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">5</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col p-0">
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-header d-flex justify-content-between">
+                                        <span class="calendar-day-number">6</span>
+                                        <button class="btn btn-sm btn-link p-0 text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Calendar Legend and Info -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-list me-1"></i> Prochains événements
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Examen de Mathématiques</h6>
+                                        <small>25 mars</small>
+                                    </div>
+                                    <small class="text-muted">10:00 - 12:00, Salle A102</small>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Fermeture pour maintenance</h6>
+                                        <small>29 mars</small>
+                                    </div>
+                                    <small class="text-muted">Tous les bâtiments</small>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Conférence IA</h6>
+                                        <small>2 avril</small>
+                                    </div>
+                                    <small class="text-muted">14:00 - 16:00, Amphithéâtre</small>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Remise des projets</h6>
+                                        <small>10 avril</small>
+                                    </div>
+                                    <small class="text-muted">Date limite pour tous les cours</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt me-1"></i> Périodes académiques
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Période</th>
+                                                <th>Date de début</th>
+                                                <th>Date de fin</th>
+                                                <th>Statut</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Semestre 1</td>
+                                                <td>01/09/2024</td>
+                                                <td>31/01/2025</td>
+                                                <td><span class="badge bg-secondary">Terminé</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Semestre 2</td>
+                                                <td>01/03/2025</td>
+                                                <td>30/06/2025</td>
+                                                <td><span class="badge bg-success">En cours</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Vacances d'été</td>
+                                                <td>01/07/2025</td>
+                                                <td>31/08/2025</td>
+                                                <td><span class="badge bg-warning">À venir</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-plus me-1"></i> Ajouter une période
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Add Event Modal -->
+    <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEventModalLabel">Ajouter un événement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Titre*</label>
+                            <input type="text" class="form-control" id="eventTitle" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="eventType" class="form-label">Type d'événement*</label>
+                            <select class="form-select" id="eventType" required>
+                                <option value="" selected>Choisir...</option>
+                                <option value="academic">Académique</option>
+                                <option value="exam">Examen</option>
+                                <option value="holiday">Vacances</option>
+                                <option value="event">Événement</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="eventStartDate" class="form-label">Date de début*</label>
+                                <input type="date" class="form-control" id="eventStartDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="eventEndDate" class="form-label">Date de fin</label>
+                                <input type="date" class="form-control" id="eventEndDate">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="eventStartTime" class="form-label">Heure de début</label>
+                                <input type="time" class="form-control" id="eventStartTime">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="eventEndTime" class="form-label">Heure de fin</label>
+                                <input type="time" class="form-control" id="eventEndTime">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="eventLocation" class="form-label">Lieu</label>
+                            <input type="text" class="form-control" id="eventLocation">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="eventAllDay">
+                            <label class="form-check-label" for="eventAllDay">
+                                Toute la journée
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="eventPublic" checked>
+                            <label class="form-check-label" for="eventPublic">
+                                Événement public
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

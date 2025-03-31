@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord Enseignant - Scolarité</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-graduation-cap fa-3x text-light"></i>
+                        <h5 class="text-light mt-2">Scolarité</h5>
+                        <p class="text-light opacity-75">{{ user.user_type.capitalize() }}</p>
+                    </div>
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light active" href="/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/profile">
+                                <i class="fas fa-user me-2"></i>
+                                Mon profil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Mes cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/students">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                Mes étudiants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/grades">
+                                <i class="fas fa-star me-2"></i>
+                                Gestion des notes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/absences">
+                                <i class="fas fa-calendar-times me-2"></i>
+                                Gestion des absences
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/teacher/resources">
+                                <i class="fas fa-file-upload me-2"></i>
+                                Ressources pédagogiques
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/messages">
+                                <i class="fas fa-envelope me-2"></i>
+                                Messagerie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/forums">
+                                <i class="fas fa-comments me-2"></i>
+                                Forums
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/calendar">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Calendrier
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <button class="btn btn-sm btn-dark d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        Tableau de bord enseignant
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell me-1"></i> 
+                                <span class="badge bg-danger">3</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="width: 300px;">
+                                <li><h6 class="dropdown-header">Notifications</h6></li>
+                                <li><a class="dropdown-item" href="#">Nouvelle annonce : "Suspension des cours"</a></li>
+                                <li><a class="dropdown-item" href="#">3 nouveaux messages des étudiants</a></li>
+                                <li><a class="dropdown-item" href="#">Réunion du département demain</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center" href="/notifications">Voir toutes les notifications</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group ms-2">
+                            <button type="button" class="btn btn-outline-secondary">
+                                <i class="fas fa-user-circle me-1"></i> {{ user.username }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Status Card -->
+                <div class="card mb-4 bg-gradient-primary text-white shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="fas fa-chalkboard-teacher fa-3x"></i>
+                            </div>
+                            <div class="col">
+                                <h4>Bienvenue, {{ user.username }}</h4>
+                                <p class="mb-0">Département : <span class="badge bg-light text-dark">Informatique</span></p>
+                            </div>
+                            <div class="col-md-3 text-md-end">
+                                {% if user.teacher %}
+                                    <h5>ID: {{ user.teacher.employee_id if user.teacher.employee_id else 'En attente' }}</h5>
+                                {% else %}
+                                    <h5>ID: En attente</h5>
+                                {% endif %}
+                                <p class="mb-0">Semestre en cours : <span class="badge bg-light text-dark">Semestre 2</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Cours</h6>
+                                        <h2 class="display-4">4</h2>
+                                    </div>
+                                    <i class="fas fa-book fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a href="/teacher/courses" class="text-white text-decoration-none">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Étudiants</h6>
+                                        <h2 class="display-4">120</h2>
+                                    </div>
+                                    <i class="fas fa-user-graduate fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a href="/teacher/students" class="text-white text-decoration-none">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-info text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Ressources</h6>
+                                        <h2 class="display-4">25</h2>
+                                    </div>
+                                    <i class="fas fa-file-upload fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a href="/teacher/resources" class="text-white text-decoration-none">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-warning text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Messages</h6>
+                                        <h2 class="display-4">8</h2>
+                                    </div>
+                                    <i class="fas fa-envelope fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a href="/messages" class="text-white text-decoration-none">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Mes cours aujourd'hui
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Horaire</th>
+                                                <th>Cours</th>
+                                                <th>Salle</th>
+                                                <th>Groupe</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>08:00 - 10:00</td>
+                                                <td>
+                                                    <span class="fw-bold">Algorithmique</span><br>
+                                                    <small class="text-muted">Licence 2</small>
+                                                </td>
+                                                <td>A101</td>
+                                                <td>Groupe A</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="#" class="btn btn-primary" title="Détails">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-success" title="Prendre les présences">
+                                                            <i class="fas fa-clipboard-check"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-info" title="Ressources">
+                                                            <i class="fas fa-file-upload"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>10:15 - 12:15</td>
+                                                <td>
+                                                    <span class="fw-bold">Programmation Avancée</span><br>
+                                                    <small class="text-muted">Master 1</small>
+                                                </td>
+                                                <td>B202</td>
+                                                <td>Groupe Unique</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="#" class="btn btn-primary" title="Détails">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-success" title="Prendre les présences">
+                                                            <i class="fas fa-clipboard-check"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-info" title="Ressources">
+                                                            <i class="fas fa-file-upload"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>14:00 - 16:00</td>
+                                                <td>
+                                                    <span class="fw-bold">TP Algorithmique</span><br>
+                                                    <small class="text-muted">Licence 2</small>
+                                                </td>
+                                                <td>Labo 1</td>
+                                                <td>Groupe B</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="#" class="btn btn-primary" title="Détails">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-success" title="Prendre les présences">
+                                                            <i class="fas fa-clipboard-check"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-info" title="Ressources">
+                                                            <i class="fas fa-file-upload"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/calendar" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-calendar-alt me-1"></i> Voir l'emploi du temps complet
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-tasks me-1"></i>
+                                Tâches à faire
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-danger me-2">Urgent</span>
+                                            Corriger les examens de mathématiques
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">23 mars</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-warning me-2">Important</span>
+                                            Préparer le contrôle continu
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">27 mars</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-info me-2">Normal</span>
+                                            Mettre à jour les ressources du cours
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">30 mars</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-secondary me-2">Planifié</span>
+                                            Réunion de département
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">2 avril</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-plus me-1"></i> Ajouter une tâche
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-envelope me-1"></i>
+                                Messages récents
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group">
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <h6 class="mb-1">Jean Dupont</h6>
+                                            <small class="text-muted">aujourd'hui</small>
+                                        </div>
+                                        <p class="mb-1 text-truncate">Question sur le prochain examen...</p>
+                                        <small><span class="badge bg-primary">Étudiant</span></small>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <h6 class="mb-1">Marie Martin</h6>
+                                            <small class="text-muted">hier</small>
+                                        </div>
+                                        <p class="mb-1 text-truncate">Demande de rendez-vous pour...</p>
+                                        <small><span class="badge bg-primary">Étudiant</span></small>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <h6 class="mb-1">Pierre Legrand</h6>
+                                            <small class="text-muted">21 mars</small>
+                                        </div>
+                                        <p class="mb-1 text-truncate">Concernant la réunion du département...</p>
+                                        <small><span class="badge bg-info">Collègue</span></small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/messages" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-envelope me-1"></i> Voir tous les messages
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-book me-1"></i>
+                                Mes cours
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Cours</th>
+                                            <th>Niveau</th>
+                                            <th>Étudiants</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>INFO301</td>
+                                            <td>Algorithmique</td>
+                                            <td>L2</td>
+                                            <td>45</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Détails">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>INFO502</td>
+                                            <td>Programmation Avancée</td>
+                                            <td>M1</td>
+                                            <td>28</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Détails">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>INFO203</td>
+                                            <td>Bases de données</td>
+                                            <td>L2</td>
+                                            <td>45</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Détails">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>INFO405</td>
+                                            <td>Développement Web</td>
+                                            <td>L3</td>
+                                            <td>32</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Détails">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-file-upload me-1"></i>
+                                Ressources récentes
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1"><i class="fas fa-file-pdf text-danger me-2"></i> Chapitre 5 - Algorithmique Avancée</h5>
+                                        <small>il y a 2 jours</small>
+                                    </div>
+                                    <p class="mb-1">Cours: Algorithmique</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1"><i class="fas fa-file-powerpoint text-warning me-2"></i> Présentation SQL Avancé</h5>
+                                        <small>il y a 5 jours</small>
+                                    </div>
+                                    <p class="mb-1">Cours: Bases de données</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1"><i class="fas fa-file-archive text-primary me-2"></i> TP3 - Exercices pratiques</h5>
+                                        <small>il y a 1 semaine</small>
+                                    </div>
+                                    <p class="mb-1">Cours: Programmation Avancée</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1"><i class="fas fa-file-code text-success me-2"></i> Exemple de code - React</h5>
+                                        <small>il y a 2 semaines</small>
+                                    </div>
+                                    <p class="mb-1">Cours: Développement Web</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

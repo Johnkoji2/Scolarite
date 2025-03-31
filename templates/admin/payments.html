@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Paiements - Scolarité</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-graduation-cap fa-3x text-light"></i>
+                        <h5 class="text-light mt-2">Scolarité</h5>
+                        <p class="text-light opacity-75">{{ user.user_type.capitalize() }}</p>
+                    </div>
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/students">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                Étudiants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/teachers">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                                Enseignants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/rooms">
+                                <i class="fas fa-door-open me-2"></i>
+                                Salles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/documents">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Demandes de documents
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light active" href="/admin/payments">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Paiements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/calendar">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Calendrier
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/announcements">
+                                <i class="fas fa-bullhorn me-2"></i>
+                                Annonces
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/reports">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Rapports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/messages">
+                                <i class="fas fa-envelope me-2"></i>
+                                Messagerie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/forums">
+                                <i class="fas fa-comments me-2"></i>
+                                Forums
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <button class="btn btn-sm btn-dark d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        Gestion des Paiements
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="input-group me-2">
+                            <input type="text" class="form-control" placeholder="Rechercher un paiement...">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                            <i class="fas fa-plus me-1"></i> Ajouter
+                        </button>
+                    </div>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Payment Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Total des paiements</h6>
+                                        <h3 class="card-text mt-2">128 500 €</h3>
+                                    </div>
+                                    <i class="fas fa-money-bill-wave fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Paiements validés</h6>
+                                        <h3 class="card-text mt-2">98 200 €</h3>
+                                    </div>
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Paiements en attente</h6>
+                                        <h3 class="card-text mt-2">23 800 €</h3>
+                                    </div>
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-danger text-white mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Paiements rejetés</h6>
+                                        <h3 class="card-text mt-2">6 500 €</h3>
+                                    </div>
+                                    <i class="fas fa-exclamation-circle fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#">Voir les détails</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filter/Action Toolbar -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form class="row g-3">
+                            <div class="col-md-2">
+                                <label for="statusFilter" class="form-label">Statut</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="" selected>Tous</option>
+                                    <option value="pending">En attente</option>
+                                    <option value="validated">Validé</option>
+                                    <option value="rejected">Rejeté</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="paymentTypeFilter" class="form-label">Type</label>
+                                <select class="form-select" id="paymentTypeFilter">
+                                    <option value="" selected>Tous</option>
+                                    <option value="tuition">Frais de scolarité</option>
+                                    <option value="registration">Inscription</option>
+                                    <option value="books">Livres</option>
+                                    <option value="other">Autre</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="paymentMethodFilter" class="form-label">Méthode</label>
+                                <select class="form-select" id="paymentMethodFilter">
+                                    <option value="" selected>Toutes</option>
+                                    <option value="cash">Espèces</option>
+                                    <option value="card">Carte bancaire</option>
+                                    <option value="transfer">Virement</option>
+                                    <option value="check">Chèque</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="dateRangeFilter" class="form-label">Période</label>
+                                <select class="form-select" id="dateRangeFilter">
+                                    <option value="" selected>Toutes les dates</option>
+                                    <option value="today">Aujourd'hui</option>
+                                    <option value="week">Cette semaine</option>
+                                    <option value="month">Ce mois</option>
+                                    <option value="custom">Personnalisée</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-1"></i> Filtrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Payment Tabs -->
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#all-payments">
+                            Tous <span class="badge bg-secondary">125</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#pending-payments">
+                            En attente <span class="badge bg-warning">25</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#validated-payments">
+                            Validés <span class="badge bg-success">90</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#rejected-payments">
+                            Rejetés <span class="badge bg-danger">10</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#overdue-payments">
+                            En retard <span class="badge bg-danger">15</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Payment Tables -->
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="all-payments">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                                            <th>Référence</th>
+                                            <th>Étudiant</th>
+                                            <th>Type</th>
+                                            <th>Montant</th>
+                                            <th>Date</th>
+                                            <th>Échéance</th>
+                                            <th>Méthode</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if payments %}
+                                            {% for payment in payments %}
+                                            <tr>
+                                                <td><input type="checkbox" class="form-check-input"></td>
+                                                <td>{{ payment.invoice_number }}</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-bold">{{ payment.student.last_name }} {{ payment.student.first_name }}</div>
+                                                            <small class="text-muted">{{ payment.student.matricule }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>{{ payment.payment_type }}</td>
+                                                <td>{{ payment.amount }} €</td>
+                                                <td>{{ payment.payment_date.strftime('%d/%m/%Y') }}</td>
+                                                <td>{{ payment.due_date.strftime('%d/%m/%Y') if payment.due_date else 'N/A' }}</td>
+                                                <td>{{ payment.payment_method }}</td>
+                                                <td>
+                                                    {% if payment.status == 'pending' %}
+                                                        <span class="badge bg-warning">En attente</span>
+                                                    {% elif payment.status == 'validated' %}
+                                                        <span class="badge bg-success">Validé</span>
+                                                    {% elif payment.status == 'rejected' %}
+                                                        <span class="badge bg-danger">Rejeté</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">{{ payment.status }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="#" class="btn btn-primary" title="Voir">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        {% if payment.status == 'pending' %}
+                                                        <a href="#" class="btn btn-success" title="Valider">
+                                                            <i class="fas fa-check"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-danger" title="Rejeter">
+                                                            <i class="fas fa-times"></i>
+                                                        </a>
+                                                        {% endif %}
+                                                        <a href="#" class="btn btn-info" title="Reçu">
+                                                            <i class="fas fa-receipt"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="10" class="text-center p-5">
+                                                    <div class="text-muted">
+                                                        <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                                                        <p>Aucun paiement trouvé</p>
+                                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                                                            <i class="fas fa-plus me-1"></i> Ajouter un paiement
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        <!-- Sample data for demonstration -->
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td>INV-2025-001</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">Dupont Marie</div>
+                                                        <small class="text-muted">INF202303</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Frais de scolarité</td>
+                                            <td>1 500 €</td>
+                                            <td>15/03/2025</td>
+                                            <td>31/03/2025</td>
+                                            <td>Virement</td>
+                                            <td>
+                                                <span class="badge bg-warning">En attente</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-success" title="Valider">
+                                                        <i class="fas fa-check"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger" title="Rejeter">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-info" title="Reçu">
+                                                        <i class="fas fa-receipt"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td>INV-2025-002</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">Martin Thomas</div>
+                                                        <small class="text-muted">INF202204</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Frais de scolarité</td>
+                                            <td>1 500 €</td>
+                                            <td>12/03/2025</td>
+                                            <td>31/03/2025</td>
+                                            <td>Carte bancaire</td>
+                                            <td>
+                                                <span class="badge bg-success">Validé</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-info" title="Reçu">
+                                                        <i class="fas fa-receipt"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted">Affichage de 1-15 sur 125 paiements</span>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Other payment tabs (pending, validated, rejected, overdue) with similar structure -->
+                    <div class="tab-pane fade" id="pending-payments">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "all-payments" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllPending"></th>
+                                            <th>Référence</th>
+                                            <th>Étudiant</th>
+                                            <th>Type</th>
+                                            <th>Montant</th>
+                                            <th>Date</th>
+                                            <th>Échéance</th>
+                                            <th>Méthode</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="10" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                                                    <p>Chargement des paiements en attente...</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="validated-payments">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "all-payments" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllValidated"></th>
+                                            <th>Référence</th>
+                                            <th>Étudiant</th>
+                                            <th>Type</th>
+                                            <th>Montant</th>
+                                            <th>Date</th>
+                                            <th>Échéance</th>
+                                            <th>Méthode</th>
+                                            <th>Validé par</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="10" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                                                    <p>Chargement des paiements validés...</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="rejected-payments">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "all-payments" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllRejected"></th>
+                                            <th>Référence</th>
+                                            <th>Étudiant</th>
+                                            <th>Type</th>
+                                            <th>Montant</th>
+                                            <th>Date</th>
+                                            <th>Raison du rejet</th>
+                                            <th>Méthode</th>
+                                            <th>Rejeté par</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="10" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                                                    <p>Chargement des paiements rejetés...</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="overdue-payments">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "all-payments" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllOverdue"></th>
+                                            <th>Référence</th>
+                                            <th>Étudiant</th>
+                                            <th>Type</th>
+                                            <th>Montant</th>
+                                            <th>Date d'échéance</th>
+                                            <th>Jours de retard</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="9" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                                                    <p>Chargement des paiements en retard...</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bulk Actions -->
+                <div class="mt-3">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Actions groupées <span class="badge bg-primary ms-1">0</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-check me-2"></i> Valider la sélection</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-times me-2"></i> Rejeter la sélection</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i> Envoyer un rappel</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i> Exporter la sélection</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Supprimer la sélection</a></li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-outline-success">
+                        <i class="fas fa-file-export me-1"></i> Exporter
+                    </button>
+                    <button type="button" class="btn btn-outline-info">
+                        <i class="fas fa-chart-bar me-1"></i> Statistiques
+                    </button>
+                </div>
+                
+                <!-- Payment Statistics -->
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i> Paiements par mois
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-chart-bar fa-4x mb-3 text-muted"></i>
+                                    <p class="text-muted">Graphique des paiements mensuels</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-pie me-1"></i> Répartition par méthode
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-chart-pie fa-4x mb-3 text-muted"></i>
+                                    <p class="text-muted">Graphique des méthodes de paiement</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Add Payment Modal -->
+    <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPaymentModalLabel">Ajouter un paiement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="paymentStudent" class="form-label">Étudiant*</label>
+                            <select class="form-select" id="paymentStudent" required>
+                                <option value="" selected>Sélectionner un étudiant...</option>
+                                <!-- Options will be populated from database -->
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentType" class="form-label">Type de paiement*</label>
+                            <select class="form-select" id="paymentType" required>
+                                <option value="" selected>Sélectionner...</option>
+                                <option value="tuition">Frais de scolarité</option>
+                                <option value="registration">Inscription</option>
+                                <option value="books">Livres</option>
+                                <option value="activities">Activités</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3" id="otherPaymentTypeField" style="display: none;">
+                            <label for="otherPaymentType" class="form-label">Préciser le type*</label>
+                            <input type="text" class="form-control" id="otherPaymentType">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentAmount" class="form-label">Montant (€)*</label>
+                            <input type="number" class="form-control" id="paymentAmount" min="0.01" step="0.01" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentDate" class="form-label">Date de paiement*</label>
+                            <input type="date" class="form-control" id="paymentDate" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentDueDate" class="form-label">Date d'échéance</label>
+                            <input type="date" class="form-control" id="paymentDueDate">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Méthode de paiement*</label>
+                            <select class="form-select" id="paymentMethod" required>
+                                <option value="" selected>Sélectionner...</option>
+                                <option value="cash">Espèces</option>
+                                <option value="card">Carte bancaire</option>
+                                <option value="transfer">Virement</option>
+                                <option value="check">Chèque</option>
+                                <option value="online">Paiement en ligne</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentReference" class="form-label">Référence de transaction</label>
+                            <input type="text" class="form-control" id="paymentReference">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentComment" class="form-label">Commentaire</label>
+                            <textarea class="form-control" id="paymentComment" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="paymentStatus" class="form-label">Statut*</label>
+                            <select class="form-select" id="paymentStatus" required>
+                                <option value="pending" selected>En attente</option>
+                                <option value="validated">Validé</option>
+                                <option value="rejected">Rejeté</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show/hide other payment type field
+        document.getElementById('paymentType').addEventListener('change', function() {
+            const otherField = document.getElementById('otherPaymentTypeField');
+            if (this.value === 'other') {
+                otherField.style.display = 'block';
+            } else {
+                otherField.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

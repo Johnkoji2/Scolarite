@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Scolarité</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Scolarité
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/contact">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="/login" class="btn btn-outline-light me-2">Connexion</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h1 class="card-title">Contactez-nous</h1>
+                        <p class="lead">
+                            Nous sommes là pour répondre à vos questions et vous aider à démarrer avec Scolarité.
+                        </p>
+                        <hr>
+                        
+                        <form>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nom complet</label>
+                                <input type="text" class="form-control" id="name" placeholder="Entrez votre nom">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Adresse email</label>
+                                <input type="email" class="form-control" id="email" placeholder="nom@exemple.com">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Sujet</label>
+                                <select class="form-select" id="subject">
+                                    <option selected>Choisissez un sujet</option>
+                                    <option value="info">Demande d'informations</option>
+                                    <option value="demo">Demande de démonstration</option>
+                                    <option value="support">Support technique</option>
+                                    <option value="feedback">Commentaires et suggestions</option>
+                                    <option value="other">Autre</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" rows="5" placeholder="Entrez votre message ici..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i> Envoyer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Informations de contact</h2>
+                        <hr>
+                        
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-map-marker-alt fa-2x text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5>Adresse</h5>
+                                <p>123 Avenue de l'Éducation<br>75001 Paris, France</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-phone fa-2x text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5>Téléphone</h5>
+                                <p>+33 1 23 45 67 89</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-envelope fa-2x text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5>Email</h5>
+                                <p>contact@scolarite.edu</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-clock fa-2x text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h5>Heures d'ouverture</h5>
+                                <p>Lundi - Vendredi: 9h00 - 18h00<br>Samedi: 9h00 - 12h00<br>Dimanche: Fermé</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title">Suivez-nous</h2>
+                        <hr>
+                        <div class="d-flex justify-content-around">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fab fa-facebook fa-2x text-primary"></i>
+                            </a>
+                            <a href="#" class="text-decoration-none">
+                                <i class="fab fa-twitter fa-2x text-info"></i>
+                            </a>
+                            <a href="#" class="text-decoration-none">
+                                <i class="fab fa-linkedin fa-2x text-primary"></i>
+                            </a>
+                            <a href="#" class="text-decoration-none">
+                                <i class="fab fa-instagram fa-2x" style="color: #e1306c;"></i>
+                            </a>
+                            <a href="#" class="text-decoration-none">
+                                <i class="fab fa-youtube fa-2x text-danger"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Scolarité</h5>
+                    <p>Système de gestion des étudiants</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2025 Scolarité. Tous droits réservés.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

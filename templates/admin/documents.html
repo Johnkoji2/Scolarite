@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demandes de Documents - Scolarité</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-graduation-cap fa-3x text-light"></i>
+                        <h5 class="text-light mt-2">Scolarité</h5>
+                        <p class="text-light opacity-75">{{ user.user_type.capitalize() }}</p>
+                    </div>
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/students">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                Étudiants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/teachers">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                                Enseignants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/courses">
+                                <i class="fas fa-book me-2"></i>
+                                Cours
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/rooms">
+                                <i class="fas fa-door-open me-2"></i>
+                                Salles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light active" href="/admin/documents">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Demandes de documents
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/payments">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Paiements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/calendar">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Calendrier
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/announcements">
+                                <i class="fas fa-bullhorn me-2"></i>
+                                Annonces
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/admin/reports">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Rapports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/messages">
+                                <i class="fas fa-envelope me-2"></i>
+                                Messagerie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/forums">
+                                <i class="fas fa-comments me-2"></i>
+                                Forums
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="text-light">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <button class="btn btn-sm btn-dark d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        Demandes de Documents
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="input-group me-2">
+                            <input type="text" class="form-control" placeholder="Rechercher une demande...">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDocumentRequestModal">
+                            <i class="fas fa-plus me-1"></i> Créer une demande
+                        </button>
+                    </div>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Filter/Action Toolbar -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form class="row g-3">
+                            <div class="col-md-3">
+                                <label for="statusFilter" class="form-label">Statut</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="" selected>Tous</option>
+                                    <option value="pending">En attente</option>
+                                    <option value="in_progress">En cours</option>
+                                    <option value="completed">Complété</option>
+                                    <option value="rejected">Rejeté</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="documentTypeFilter" class="form-label">Type de document</label>
+                                <select class="form-select" id="documentTypeFilter">
+                                    <option value="" selected>Tous</option>
+                                    <option value="certificate">Certificat de scolarité</option>
+                                    <option value="transcript">Relevé de notes</option>
+                                    <option value="diploma">Diplôme</option>
+                                    <option value="attestation">Attestation</option>
+                                    <option value="other">Autre</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="urgencyFilter" class="form-label">Urgence</label>
+                                <select class="form-select" id="urgencyFilter">
+                                    <option value="" selected>Tous</option>
+                                    <option value="high">Élevée</option>
+                                    <option value="medium">Moyenne</option>
+                                    <option value="low">Faible</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-1"></i> Filtrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Document Requests Tabs -->
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#pending">
+                            En attente <span class="badge bg-primary">15</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#in-progress">
+                            En cours <span class="badge bg-info">8</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#completed">
+                            Complété <span class="badge bg-success">24</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#rejected">
+                            Rejeté <span class="badge bg-danger">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#all">
+                            Tous <span class="badge bg-secondary">50</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Document Requests Table -->
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="pending">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                                            <th>#</th>
+                                            <th>Étudiant</th>
+                                            <th>Type de document</th>
+                                            <th>Date de demande</th>
+                                            <th>Copies</th>
+                                            <th>Urgence</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if document_requests %}
+                                            {% for request in document_requests %}
+                                                {% if request.status == 'pending' %}
+                                                <tr>
+                                                    <td><input type="checkbox" class="form-check-input"></td>
+                                                    <td>{{ request.id }}</td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                                <i class="fas fa-user"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div class="fw-bold">{{ request.student.last_name }} {{ request.student.first_name }}</div>
+                                                                <small class="text-muted">{{ request.student.matricule }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ request.document_type }}</td>
+                                                    <td>{{ request.request_date.strftime('%d/%m/%Y') }}</td>
+                                                    <td>{{ request.copies }}</td>
+                                                    <td>
+                                                        <span class="badge bg-danger">Élevée</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-primary">En attente</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <a href="#" class="btn btn-primary" title="Voir">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            <a href="#" class="btn btn-success" title="Approuver">
+                                                                <i class="fas fa-check"></i>
+                                                            </a>
+                                                            <a href="#" class="btn btn-danger" title="Rejeter">
+                                                                <i class="fas fa-times"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="9" class="text-center p-5">
+                                                    <div class="text-muted">
+                                                        <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                                        <p>Aucune demande de document en attente</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        <!-- Sample data for demonstration -->
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td>1</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">Dupont Marie</div>
+                                                        <small class="text-muted">INF202303</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Certificat de scolarité</td>
+                                            <td>15/03/2025</td>
+                                            <td>2</td>
+                                            <td>
+                                                <span class="badge bg-danger">Élevée</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">En attente</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-success" title="Approuver">
+                                                        <i class="fas fa-check"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger" title="Rejeter">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input"></td>
+                                            <td>2</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">Martin Thomas</div>
+                                                        <small class="text-muted">INF202204</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Relevé de notes</td>
+                                            <td>18/03/2025</td>
+                                            <td>1</td>
+                                            <td>
+                                                <span class="badge bg-warning">Moyenne</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">En attente</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="#" class="btn btn-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-success" title="Approuver">
+                                                        <i class="fas fa-check"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger" title="Rejeter">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted">Affichage de 1-15 sur 15 demandes</span>
+                                </div>
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="in-progress">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "pending" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllInProgress"></th>
+                                            <th>#</th>
+                                            <th>Étudiant</th>
+                                            <th>Type de document</th>
+                                            <th>Date de demande</th>
+                                            <th>Assigné à</th>
+                                            <th>Progression</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="9" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                                    <p>Aucune demande de document en cours de traitement</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="completed">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "pending" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllCompleted"></th>
+                                            <th>#</th>
+                                            <th>Étudiant</th>
+                                            <th>Type de document</th>
+                                            <th>Date de demande</th>
+                                            <th>Date de complétion</th>
+                                            <th>Traité par</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="9" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                                    <p>Aucune demande de document complétée</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="rejected">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "pending" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllRejected"></th>
+                                            <th>#</th>
+                                            <th>Étudiant</th>
+                                            <th>Type de document</th>
+                                            <th>Date de demande</th>
+                                            <th>Raison du rejet</th>
+                                            <th>Rejeté par</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="9" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                                    <p>Aucune demande de document rejetée</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="all">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <!-- Similar table structure as "pending" -->
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" class="form-check-input" id="selectAllRequests"></th>
+                                            <th>#</th>
+                                            <th>Étudiant</th>
+                                            <th>Type de document</th>
+                                            <th>Date de demande</th>
+                                            <th>Copies</th>
+                                            <th>Urgence</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="9" class="text-center p-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                                    <p>Aucune demande de document trouvée</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bulk Actions -->
+                <div class="mt-3">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Actions groupées <span class="badge bg-primary ms-1">0</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-check me-2"></i> Approuver la sélection</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-times me-2"></i> Rejeter la sélection</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i> Exporter la sélection</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Supprimer la sélection</a></li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-outline-success">
+                        <i class="fas fa-file-export me-1"></i> Exporter
+                    </button>
+                    <button type="button" class="btn btn-outline-info">
+                        <i class="fas fa-chart-bar me-1"></i> Statistiques
+                    </button>
+                </div>
+                
+                <!-- Document Request Statistics -->
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i> Demandes de documents par mois
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-chart-bar fa-4x mb-3 text-muted"></i>
+                                    <p class="text-muted">Graphique des demandes de documents mensuelles</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-file-alt me-1"></i> Types de documents demandés
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Certificat de scolarité
+                                        <span class="badge bg-primary rounded-pill">25</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Relevé de notes
+                                        <span class="badge bg-primary rounded-pill">18</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Attestation
+                                        <span class="badge bg-primary rounded-pill">12</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Diplôme
+                                        <span class="badge bg-primary rounded-pill">8</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Autre
+                                        <span class="badge bg-primary rounded-pill">5</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Add Document Request Modal -->
+    <div class="modal fade" id="addDocumentRequestModal" tabindex="-1" aria-labelledby="addDocumentRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDocumentRequestModalLabel">Nouvelle demande de document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="requestStudent" class="form-label">Étudiant*</label>
+                            <select class="form-select" id="requestStudent" required>
+                                <option value="" selected>Sélectionner un étudiant...</option>
+                                <!-- Options will be populated from database -->
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="requestDocumentType" class="form-label">Type de document*</label>
+                            <select class="form-select" id="requestDocumentType" required>
+                                <option value="" selected>Sélectionner...</option>
+                                <option value="certificate">Certificat de scolarité</option>
+                                <option value="transcript">Relevé de notes</option>
+                                <option value="diploma">Diplôme</option>
+                                <option value="attestation">Attestation</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3" id="otherDocumentTypeField" style="display: none;">
+                            <label for="otherDocumentType" class="form-label">Préciser le type*</label>
+                            <input type="text" class="form-control" id="otherDocumentType">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="requestCopies" class="form-label">Nombre de copies*</label>
+                            <input type="number" class="form-control" id="requestCopies" min="1" value="1" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="requestUrgency" class="form-label">Urgence</label>
+                            <select class="form-select" id="requestUrgency">
+                                <option value="low" selected>Faible</option>
+                                <option value="medium">Moyenne</option>
+                                <option value="high">Élevée</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="requestReason" class="form-label">Motif de la demande</label>
+                            <textarea class="form-control" id="requestReason" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="requestNotify" checked>
+                            <label class="form-check-label" for="requestNotify">
+                                Notifier l'étudiant lorsque le document est prêt
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show/hide other document type field
+        document.getElementById('requestDocumentType').addEventListener('change', function() {
+            const otherField = document.getElementById('otherDocumentTypeField');
+            if (this.value === 'other') {
+                otherField.style.display = 'block';
+            } else {
+                otherField.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
